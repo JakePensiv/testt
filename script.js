@@ -9,6 +9,7 @@ const gameFrame = document.getElementById("gameFrame");
 const emptyState = document.getElementById("emptyState");
 const openGameLink = document.getElementById("openGameLink");
 const reloadButton = document.getElementById("reloadButton");
+const fullscreenButton = document.getElementById("fullscreenButton");
 
 let allGames = [];
 let activeGameId = null;
@@ -152,6 +153,23 @@ reloadButton.addEventListener("click", () => {
   if (gameFrame.src && gameFrame.src !== "about:blank") {
     gameFrame.src = gameFrame.src;
   }
+});
+
+fullscreenButton.addEventListener("click", async () => {
+  if (!gameFrame.src || gameFrame.src === "about:blank") {
+    return;
+  }
+
+  if (document.fullscreenElement) {
+    await document.exitFullscreen();
+    return;
+  }
+
+  await document.querySelector(".player-frame-wrap").requestFullscreen();
+});
+
+document.addEventListener("fullscreenchange", () => {
+  fullscreenButton.textContent = document.fullscreenElement ? "Exit Fullscreen" : "Fullscreen";
 });
 
 loadGames();
