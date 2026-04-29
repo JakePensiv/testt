@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pixel Painter</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 18px;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(180deg, #fef3c7 0%, #fde68a 100%);
+      color: #1f2937;
+    }
+
+    .game-shell {
+      width: min(92vw, 680px);
+      background: rgba(255, 255, 255, 0.78);
+      border-radius: 24px;
+      padding: 22px;
+      box-shadow: 0 20px 40px rgba(120, 53, 15, 0.12);
+    }
+
+    .hud {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .target-strip,
+    .board {
+      display: grid;
+      gap: 12px;
+    }
+
+    .target-strip {
+      grid-template-columns: repeat(4, 1fr);
+      margin-bottom: 18px;
+    }
+
+    .board {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    .swatch,
+    .cell {
+      aspect-ratio: 1;
+      border-radius: 18px;
+      border: 0;
+    }
+
+    .cell {
+      cursor: pointer;
+      transition: transform 120ms ease;
+    }
+
+    .cell:hover {
+      transform: scale(0.98);
+    }
+
+    button {
+      border: 0;
+      border-radius: 999px;
+      padding: 10px 14px;
+      cursor: pointer;
+      font-weight: 700;
+      background: #f59e0b;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <div class="game-shell">
+    <div class="hud">
+      <div>
+        <strong id="statusLabel">Match the pattern</strong>
+        <p id="detailLabel">Repeat the four target colors in order.</p>
+      </div>
+      <button id="restartButton" type="button">New Round</button>
+    </div>
+
+    <div id="targetStrip" class="target-strip"></div>
+    <div id="board" class="board"></div>
+  </div>
+
+  <script>
+    const palette = ["#ef4444", "#3b82f6", "#22c55e", "#a855f7", "#f97316", "#14b8a6"];
+    const targetStrip = document.getElementById("targetStrip");
+    const board = document.getElementById("board");
+    const statusLabel = document.getElementById("statusLabel");
+    const detailLabel = document.getElementById("detailLabel");
+    const restartButton = document.getElementById("restartButton");
+
+    let target = [];
+    let progress = 0;
+
+    function randomColor() {
+      return palette[Math.floor(Math.random() * palette.length)];
+    }
+
+    function buildRound() {
+      target = Array.from({ length: 4 }, randomColor);
+      progress = 0;
+      statusLabel.textContent = "Match the pattern";
+      detailLabel.textContent = "Repeat the four target colors in order.";
+
+      targetStrip.innerHTML = target
+        .map((color) => `<div class="swatch" style="background:${color}"></div>`)
+        .join("");
+
+      board.innerHTML = Array.from({ length: 16 }, () => {
+        const color = randomColor();
+        return `<button class="cell" style="background:${color}" data-color="${color}" type="button" aria-label="Color tile"></button>`;
+      }).join("");
+
+      board.querySelectorAll(".cell").forEach((cell) => {
+        cell.addEventListener("click", () => handleMove(cell.dataset.color));
+      });
+    }
+
+    function handleMove(color) {
+      if (color === target[progress]) {
+        progress += 1;
+        detailLabel.textContent = `Correct picks: ${progress} / ${target.length}`;
+
+        if (progress === target.length) {
+          statusLabel.textContent = "You win";
+          detailLabel.textContent = "Start a new round and try again.";
+        }
+      } else {
+        progress = 0;
+        statusLabel.textContent = "Wrong color";
+        detailLabel.textContent = "Pattern reset. Start from the first color again.";
+      }
+    }
+
+    restartButton.addEventListener("click", buildRound);
+    buildRound();
+  </script>
+</body>
+</html>
