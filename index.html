@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Arcade Portal</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="accessGate" class="gate-shell">
+    <section class="gate-card">
+      <p class="eyebrow">Private Access</p>
+      <h1>Arcade Portal</h1>
+      <p class="gate-copy">Enter the shared passcode to continue into the portal.</p>
+
+      <form id="gateForm" class="gate-form">
+        <label for="gateCode">Passcode</label>
+        <input id="gateCode" name="gateCode" type="password" autocomplete="off" placeholder="Enter passcode" required>
+        <div class="gate-actions">
+          <span id="gateStatus" class="gate-status">Access is stored only in this browser.</span>
+          <button type="submit">Enter</button>
+        </div>
+      </form>
+    </section>
+  </div>
+
+  <div class="page-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <p class="eyebrow">JSON Powered</p>
+        <h1>Arcade Portal</h1>
+        <p class="brand-copy">A simple unblocked games hub that loads every game from a JSON file and opens it in an iframe.</p>
+      </div>
+
+      <label class="search-panel" for="searchInput">
+        <span>Find a game</span>
+        <input id="searchInput" type="search" placeholder="Search by name, tag, or category">
+      </label>
+
+      <div class="section-heading">
+        <h2>Games</h2>
+        <span id="gameCount">0 loaded</span>
+      </div>
+
+      <div id="gameList" class="game-list" aria-live="polite"></div>
+    </aside>
+
+    <main class="viewer-panel">
+      <section class="hero-card">
+        <div>
+          <p class="eyebrow">Featured</p>
+          <h2 id="activeTitle">Choose a game</h2>
+          <p id="activeDescription">Select a game from the left to launch it in the built-in iframe player.</p>
+        </div>
+        <div class="hero-meta">
+          <span id="activeCategory" class="chip">Waiting</span>
+          <button id="logoutButton" class="ghost-button" type="button">Log Out</button>
+          <a id="openGameLink" href="#" target="_blank" rel="noreferrer">Open in new tab</a>
+        </div>
+      </section>
+
+      <section class="player-card">
+        <div class="player-toolbar">
+          <div>
+            <p class="toolbar-label">Now Playing</p>
+            <strong id="nowPlaying">No game selected</strong>
+          </div>
+          <div class="toolbar-actions">
+            <button id="fullscreenButton" type="button">Fullscreen</button>
+            <button id="reloadButton" type="button">Reload Game</button>
+          </div>
+        </div>
+
+        <div class="player-frame-wrap">
+          <iframe
+            id="gameFrame"
+            title="Game player"
+            src="about:blank"
+            loading="lazy"
+            referrerpolicy="no-referrer"
+          ></iframe>
+          <div id="emptyState" class="empty-state">
+            <h3>Ready to play</h3>
+            <p>Your games are loaded from <code>games.json</code>. Add more entries there to expand the arcade.</p>
+          </div>
+        </div>
+        <p class="player-note">Tip: fullscreen works best after selecting a game. On phones, rotate to landscape for more space.</p>
+      </section>
+
+      <section class="chat-card">
+        <div class="chat-header">
+          <div>
+            <p class="eyebrow">Community</p>
+            <h2>Mini Shoutbox</h2>
+            <p class="chat-copy">Keep it small: short messages, manual approval, and a simple queue the site owner can review.</p>
+          </div>
+          <button id="ownerModeButton" class="ghost-button" type="button">Owner Tools</button>
+        </div>
+
+        <div class="chat-grid">
+          <div class="chat-column">
+            <div class="chat-panel">
+              <div class="section-heading">
+                <h3>Approved Posts</h3>
+                <span id="approvedCount">0 live</span>
+              </div>
+              <div id="approvedMessages" class="message-feed" aria-live="polite"></div>
+            </div>
+          </div>
+
+          <div class="chat-column">
+            <div class="chat-panel">
+              <div class="section-heading">
+                <h3>Post a Message</h3>
+                <span>140 chars max</span>
+              </div>
+
+              <form id="chatForm" class="chat-form">
+                <label for="chatName">Nickname</label>
+                <input id="chatName" name="chatName" type="text" maxlength="20" placeholder="ArcadeFan42" required>
+
+                <label for="chatMessage">Message</label>
+                <textarea id="chatMessage" name="chatMessage" maxlength="140" rows="4" placeholder="Share a tip, challenge a friend, or suggest a game." required></textarea>
+
+                <div class="chat-form-footer">
+                  <span id="chatStatus" class="chat-status">Posts go into the approval queue first.</span>
+                  <button type="submit">Submit for Review</button>
+                </div>
+              </form>
+            </div>
+
+            <div id="ownerPanel" class="chat-panel owner-panel" hidden>
+              <div class="section-heading">
+                <h3>Moderation Queue</h3>
+                <span id="pendingCount">0 waiting</span>
+              </div>
+              <p class="owner-copy">Owner mode is a lightweight starter. In a real shared deployment, move moderation to an Apps Script backend.</p>
+              <div id="pendingMessages" class="message-feed"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
