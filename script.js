@@ -1,5 +1,6 @@
 const gameList = document.getElementById("gameList");
 const gameCount = document.getElementById("gameCount");
+const sectionFilters = document.getElementById("sectionFilters");
 const searchInput = document.getElementById("searchInput");
 const activeTitle = document.getElementById("activeTitle");
 const activeDescription = document.getElementById("activeDescription");
@@ -28,6 +29,7 @@ const logoutButton = document.getElementById("logoutButton");
 
 let allGames = [];
 let activeGameId = null;
+let activeSection = "All";
 const chatStorageKey = "arcadePortal.chatStore";
 const chatOwnerModeKey = "arcadePortal.ownerMode";
 const gateStorageKey = "arcadePortal.accessGranted";
@@ -40,6 +42,7 @@ const localFallbackGames = [
     id: "meteor-dodge",
     title: "Meteor Dodge",
     description: "Move left and right, dodge falling meteors, and survive as long as you can.",
+    section: "Local Games provided by Arcade Portal",
     category: "Arcade",
     tags: ["reflex", "survival", "keyboard"],
     iframeSrc: "games/meteor-dodge.html"
@@ -48,6 +51,7 @@ const localFallbackGames = [
     id: "pixel-painter",
     title: "Pixel Painter",
     description: "Tap tiles to match the target color sequence before the timer runs out.",
+    section: "Local Games provided by Arcade Portal",
     category: "Puzzle",
     tags: ["memory", "colors", "timed"],
     iframeSrc: "games/pixel-painter.html"
@@ -56,6 +60,7 @@ const localFallbackGames = [
     id: "three-in-a-row",
     title: "Three in a Row",
     description: "A clean local tic-tac-toe game for two players sharing one keyboard or mouse.",
+    section: "Local Games provided by Arcade Portal",
     category: "Board",
     tags: ["classic", "2-player", "strategy"],
     iframeSrc: "games/three-in-a-row.html"
@@ -215,6 +220,7 @@ async function loadGames() {
   try {
     if (window.location.protocol === "file:") {
       allGames = localFallbackGames;
+      renderSectionFilters();
       renderGameList(allGames);
 
       if (allGames.length > 0) {
@@ -232,6 +238,7 @@ async function loadGames() {
 
     const payload = await response.json();
     allGames = Array.isArray(payload.games) ? payload.games : [];
+    renderSectionFilters();
     renderGameList(allGames);
 
     if (allGames.length > 0) {
@@ -251,20 +258,54 @@ function renderGameList(games) {
     return;
   }
 
-  gameList.innerHTML = games.map((game) => `
-    <button class="game-card ${game.id === activeGameId ? "active" : ""}" data-game-id="${game.id}" type="button">
-      <h3>${escapeHtml(game.title)}</h3>
-      <p>${escapeHtml(game.description)}</p>
-      <div class="card-tags">
-        <span>${escapeHtml(game.category)}</span>
-        ${(game.tags || []).slice(0, 2).map((tag) => `<span>${escapeHtml(tag)}</span>`).join("")}
-      </div>
-    </button>
+  const groupedGames = games.reduce((groups, game) => {
+    const section = game.section || "General";
+
+    if (!groups[section]) {
+      groups[section] = [];
+    }
+
+    groups[section].push(game);
+    return groups;
+  }, {});
+
+  gameList.innerHTML = Object.entries(groupedGames).map(([section, sectionGames]) => `
+    <div class="game-group">
+      <p class="game-group-label">${escapeHtml(section)}</p>
+      ${sectionGames.map((game) => `
+        <button class="game-card ${game.id === activeGameId ? "active" : ""}" data-game-id="${game.id}" type="button">
+          <h3>${escapeHtml(game.title)}</h3>
+          <p>${escapeHtml(game.description)}</p>
+          <div class="card-tags">
+            <span>${escapeHtml(game.category)}</span>
+            ${(game.tags || []).slice(0, 2).map((tag) => `<span>${escapeHtml(tag)}</span>`).join("")}
+          </div>
+        </button>
+      `).join("")}
+    </div>
   `).join("");
 
   gameList.querySelectorAll(".game-card").forEach((button) => {
     button.addEventListener("click", () => {
       selectGame(button.dataset.gameId);
+    });
+  });
+}
+
+function renderSectionFilters() {
+  const sections = ["All", ...new Set(allGames.map((game) => game.section || "General"))];
+
+  sectionFilters.innerHTML = sections.map((section) => `
+    <button class="section-filter ${section === activeSection ? "active" : ""}" data-section="${escapeHtml(section)}" type="button">
+      ${escapeHtml(section)}
+    </button>
+  `).join("");
+
+  sectionFilters.querySelectorAll(".section-filter").forEach((button) => {
+    button.addEventListener("click", () => {
+      activeSection = button.dataset.section;
+      renderSectionFilters();
+      renderGameList(filterGames(searchInput.value));
     });
   });
 }
@@ -290,15 +331,19 @@ function selectGame(gameId) {
 
 function filterGames(query) {
   const normalizedQuery = query.trim().toLowerCase();
+  const sectionFilteredGames = allGames.filter((game) => (
+    activeSection === "All" || (game.section || "General") === activeSection
+  ));
 
   if (!normalizedQuery) {
-    return allGames;
+    return sectionFilteredGames;
   }
 
-  return allGames.filter((game) => {
+  return sectionFilteredGames.filter((game) => {
     const searchableText = [
       game.title,
       game.description,
+      game.section || "General",
       game.category,
       ...(game.tags || [])
     ].join(" ").toLowerCase();

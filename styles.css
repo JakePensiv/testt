@@ -200,11 +200,50 @@ input {
   font-size: 0.9rem;
 }
 
+.section-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.section-filter {
+  border: 1px solid rgba(219, 108, 50, 0.18);
+  border-radius: 999px;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--accent-deep);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.section-filter.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+}
+
 .game-list {
   display: grid;
   gap: 12px;
   overflow: auto;
   padding-right: 4px;
+}
+
+.game-group {
+  display: grid;
+  gap: 12px;
+}
+
+.game-group + .game-group {
+  margin-top: 6px;
+}
+
+.game-group-label {
+  margin: 2px 0 0;
+  color: var(--accent-deep);
+  font-size: 0.84rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
 }
 
 .game-card {

@@ -4,6 +4,7 @@
       "id": "meteor-dodge",
       "title": "Meteor Dodge",
       "description": "Move left and right, dodge falling meteors, and survive as long as you can.",
+      "section": "Local Games provided by Arcade Portal",
       "category": "Arcade",
       "tags": ["reflex", "survival", "keyboard"],
       "iframeSrc": "games/meteor-dodge.html"
@@ -12,6 +13,7 @@
       "id": "pixel-painter",
       "title": "Pixel Painter",
       "description": "Tap tiles to match the target color sequence before the timer runs out.",
+      "section": "Local Games provided by Arcade Portal",
       "category": "Puzzle",
       "tags": ["memory", "colors", "timed"],
       "iframeSrc": "games/pixel-painter.html"
@@ -20,6 +22,7 @@
       "id": "three-in-a-row",
       "title": "Three in a Row",
       "description": "A clean local tic-tac-toe game for two players sharing one keyboard or mouse.",
+      "section": "Local Games provided by Arcade Portal",
       "category": "Board",
       "tags": ["classic", "2-player", "strategy"],
       "iframeSrc": "games/three-in-a-row.html"
